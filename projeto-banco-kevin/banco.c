@@ -50,19 +50,19 @@ int validar_combinacao_contas(int possui_corrente, int possui_salario) {
 }
 
 double calcular_limite_emprestimo(const Carteira *cliente) {
-    /* Exige conta-poupanca com saldo, conta corrente e no maximo 1 emprestimo[cite: 1] */
+    /* Exige conta-poupanca com saldo, conta corrente e no maximo 1 emprestimo */
     if (!cliente->possui_emprestimo &&
         cliente->possui_poupanca &&
         cliente->saldo_poupanca > 0.0 &&
         cliente->possui_corrente) {
-        /* 25% de dez vezes o saldo total da conta[cite: 1] */
+        /* 25% de dez vezes o saldo total da conta */
         return 0.25 * (10.0 * cliente->saldo);
     }
     return 0.0;
 }
 
 int apto_titulo_capitalizacao(const Carteira *cliente) {
-    /* Entre R$ 1.000,00 e R$ 1.500,00 de saldo na conta-salario[cite: 1] */
+    /* Entre R$ 1.000,00 e R$ 1.500,00 de saldo na conta-salario */
     if (cliente->possui_salario &&
         cliente->saldo_salario >= 1000.0 &&
         cliente->saldo_salario <= 1500.0) {
@@ -72,7 +72,7 @@ int apto_titulo_capitalizacao(const Carteira *cliente) {
 }
 
 void verificar_alerta_saldo_negativo(const Carteira *cliente) {
-    /* Alerta quando o saldo da conta corrente esta negativo[cite: 1] */
+    /* Alerta quando o saldo da conta corrente esta negativo */
     if (cliente->possui_corrente && cliente->saldo_corrente < 0.0) {
         printf("[ALERTA] %s (%04d-%02d): Saldo negativo na conta corrente (R$ %.2f)!\n",
                cliente->nome,
@@ -232,7 +232,7 @@ void abrir_banco(Banco *banco) {
             deseja_poupanca = (deseja_poupanca != 0);
 
             if (!validar_combinacao_contas(deseja_corrente, deseja_salario)) {
-                printf("Combinacao invalida: nao e permitido ter conta-salario e conta corrente simultaneamente[cite: 1].\n");
+                printf("Combinacao invalida: nao e permitido ter conta-salario e conta corrente simultaneamente.\n");
             } else if (!deseja_corrente && !deseja_salario && !deseja_poupanca) {
                 printf("Selecione pelo menos um tipo de conta.\n");
             }
@@ -260,7 +260,7 @@ void abrir_banco(Banco *banco) {
         cliente_atual->comprou_titulo = 0;
         cliente_atual->historico[0] = '\0';
 
-        registrar_evento_historico(cliente_atual, "Cadastro inicial com saldos zerados[cite: 1].");
+        registrar_evento_historico(cliente_atual, "Cadastro inicial com saldos zerados.");
     }
 
     banco->banco_aberto = 1;
@@ -272,7 +272,7 @@ void acessar_conta_cliente(Banco *banco) {
     int indice_encontrado = -1;
 
     if (!banco->banco_aberto) {
-        printf("\nO banco esta fechado! Abra o banco primeiro[cite: 1].\n");
+        printf("\nO banco esta fechado! Abra o banco primeiro.\n");
         return;
     }
 
@@ -299,7 +299,7 @@ void acessar_conta_cliente(Banco *banco) {
     Carteira *cliente = &banco->clientes[indice_encontrado];
     int opcao_cliente = 0;
 
-    /* Alerta sempre que o cliente acessar enquanto tiver saldo negativo na conta corrente[cite: 1] */
+    /* Alerta sempre que o cliente acessar enquanto tiver saldo negativo na conta corrente */
     verificar_alerta_saldo_negativo(cliente);
 
     do {
@@ -382,7 +382,7 @@ void acessar_conta_cliente(Banco *banco) {
         } else if (opcao_cliente == 3) {
             double limite_disponivel = calcular_limite_emprestimo(cliente);
             if (limite_disponivel <= 0.0) {
-                printf("Cliente nao atende aos criterios para solicitar emprestimo[cite: 1].\n");
+                printf("Cliente nao atende aos criterios para solicitar emprestimo.\n");
             } else {
                 double valor_solicitado = 0.0;
                 char mensagem_emprestimo[MAX_HISTORICO];
@@ -408,7 +408,7 @@ void acessar_conta_cliente(Banco *banco) {
             if (cliente->comprou_titulo) {
                 printf("Cliente ja possui titulo de capitalizacao.\n");
             } else if (!apto_titulo_capitalizacao(cliente)) {
-                printf("Para adquirir titulo, e preciso ter entre R$ 1.000,00 e R$ 1.500,00 na conta-salario[cite: 1].\n");
+                printf("Para adquirir titulo, e preciso ter entre R$ 1.000,00 e R$ 1.500,00 na conta-salario.\n");
             } else {
                 cliente->comprou_titulo = 1;
                 registrar_evento_historico(cliente, "Titulo de capitalizacao adquirido.");
@@ -424,7 +424,7 @@ void acessar_conta_cliente(Banco *banco) {
 
 void consultar_historico(const Banco *banco) {
     if (!banco->banco_aberto) {
-        printf("\nO banco esta fechado! Abra o banco primeiro[cite: 1].\n");
+        printf("\nO banco esta fechado! Abra o banco primeiro.\n");
         return;
     }
 
@@ -476,12 +476,12 @@ void consultar_historico(const Banco *banco) {
 
 void efetuar_sorteio(Banco *banco) {
     if (!banco->banco_aberto) {
-        printf("\nO banco esta fechado! Abra o banco primeiro[cite: 1].\n");
+        printf("\nO banco esta fechado! Abra o banco primeiro.\n");
         return;
     }
 
     if (banco->quantidade_clientes < QTD_FINALISTAS_SORTEIO) {
-        printf("\nE necessario ter pelo menos %d clientes para o sorteio[cite: 1].\n", QTD_FINALISTAS_SORTEIO);
+        printf("\nE necessario ter pelo menos %d clientes para o sorteio.\n", QTD_FINALISTAS_SORTEIO);
         return;
     }
 
@@ -510,7 +510,7 @@ void efetuar_sorteio(Banco *banco) {
     for (int indice_finalista = 0; indice_finalista < QTD_FINALISTAS_SORTEIO; indice_finalista++) {
         const Carteira *finalista = &banco->clientes[indices_ordenados[indice_finalista]];
         if (!finalista->comprou_titulo) {
-            printf("\nSorteio cancelado: nem todos os 5 maiores saldos possuem titulo de capitalizacao[cite: 1].\n");
+            printf("\nSorteio cancelado: nem todos os 5 maiores saldos possuem titulo de capitalizacao.\n");
             free(indices_ordenados);
             return;
         }
