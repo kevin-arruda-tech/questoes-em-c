@@ -1,12 +1,12 @@
-**Esta pasta são os códigos pedidos separados em três partes:
+# Carteira Digital em C
 
-meubanco.c | é onde fica as declarações de constantes e estruturas;
+Este repositório contém os códigos do projeto de carteira digital divididos em três partes:
 
-banco.c | onde fica a lógica e regras do banco;
+* **`meubanco.h`**: onde ficam as declarações de constantes, estruturas (`struct`) e protótipos de funções;
+* **`banco.c`**: onde fica a implementação da lógica e das regras do banco;
+* **`main.c`**: onde fica o fluxo principal do programa e o menu interativo.
 
-main.c | é o código que fica o fluxo principal e o menu interativo.
-
-A atividade se baseia neste enunciado:**
+A atividade se baseia no enunciado **Visão do Banco** (carteira digital com `n` clientes, contas iniciando em `1000`, empréstimos, títulos de capitalização, alertas de saldo negativo, sorteio baseado em Fibonacci e consulta de histórico)[cite: 1, 2].
 
 ## Visão do Banco
 
