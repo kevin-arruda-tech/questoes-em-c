@@ -1,4 +1,4 @@
-Esta pasta são os códigos pedidos separados em três partes:
+**Esta pasta são os códigos pedidos separados em três partes:
 
 meubanco.c | é onde fica as declarações de constantes e estruturas;
 
@@ -6,7 +6,7 @@ banco.c | onde fica a lógica e regras do banco;
 
 main.c | é o código que fica o fluxo principal e o menu interativo.
 
-A atividade se baseia neste enunciado:
+A atividade se baseia neste enunciado:**
 
 Visão do Banco
 Construa um algoritmo que simule uma carteira digital. A carteira deverá conter
