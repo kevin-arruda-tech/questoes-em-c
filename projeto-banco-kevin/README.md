@@ -2,11 +2,11 @@
 
 Este repositório contém os códigos do projeto de carteira digital divididos em três partes:
 
-* **`meubanco.h`**: onde ficam as declarações de constantes, estruturas (`struct`) e protótipos de funções;
+* **`meubanco.h`**: onde ficam as declarações de constantes, estruturas;
 * **`banco.c`**: onde fica a implementação da lógica e das regras do banco;
 * **`main.c`**: onde fica o fluxo principal do programa e o menu interativo.
 
-A atividade se baseia no enunciado **Visão do Banco** (carteira digital com `n` clientes, contas iniciando em `1000`, empréstimos, títulos de capitalização, alertas de saldo negativo, sorteio baseado em Fibonacci e consulta de histórico)[cite: 1, 2].
+A atividade se baseia no enunciado:
 
 ## Visão do Banco
 
