@@ -14,6 +14,9 @@ void inicializar_banco(Banco *banco) {
     banco->quantidade_clientes = 0;
     banco->banco_aberto = 0;
     banco->proximo_numero = 1000;
+    banco->sorteio_realizado = 0;
+    banco->indice_contemplado = -1;
+    banco->premio_sorteio = 0.0;
 }
 
 void atualizar_saldo_total(Carteira *cliente) {
@@ -122,7 +125,6 @@ int eh_primo(long long numero) {
 
 int escolher_vencedor_fibonacci(const Banco *banco, const int indices_finalistas[QTD_FINALISTAS_SORTEIO]) {
     long long resultados_fibonacci[QTD_FINALISTAS_SORTEIO];
-    int premiado_finalista[QTD_FINALISTAS_SORTEIO] = {0};
 
     for (int indice_finalista = 0; indice_finalista < QTD_FINALISTAS_SORTEIO; indice_finalista++) {
         const Carteira *cliente_finalista = &banco->clientes[indices_finalistas[indice_finalista]];
@@ -134,7 +136,7 @@ int escolher_vencedor_fibonacci(const Banco *banco, const int indices_finalistas
     int indice_vencedor_primo = -1;
     long long maior_primo = 0;
     for (int indice_finalista = 0; indice_finalista < QTD_FINALISTAS_SORTEIO; indice_finalista++) {
-        if (!premiado_finalista[indice_finalista] && eh_primo(resultados_fibonacci[indice_finalista])) {
+        if (eh_primo(resultados_fibonacci[indice_finalista])) {
             if (indice_vencedor_primo == -1 || resultados_fibonacci[indice_finalista] > maior_primo) {
                 maior_primo = resultados_fibonacci[indice_finalista];
                 indice_vencedor_primo = indice_finalista;
@@ -142,15 +144,14 @@ int escolher_vencedor_fibonacci(const Banco *banco, const int indices_finalistas
         }
     }
     if (indice_vencedor_primo != -1) {
-        premiado_finalista[indice_vencedor_primo] = 1;
         return indices_finalistas[indice_vencedor_primo];
     }
 
-    /* 2o criterio: maior resultado par entre os finalistas nao premiados */
+    /* 2o criterio: maior resultado par entre os finalistas */
     int indice_vencedor_par = -1;
     long long maior_par = 0;
     for (int indice_finalista = 0; indice_finalista < QTD_FINALISTAS_SORTEIO; indice_finalista++) {
-        if (!premiado_finalista[indice_finalista] && resultados_fibonacci[indice_finalista] % 2 == 0) {
+        if (resultados_fibonacci[indice_finalista] % 2 == 0) {
             if (indice_vencedor_par == -1 || resultados_fibonacci[indice_finalista] > maior_par) {
                 maior_par = resultados_fibonacci[indice_finalista];
                 indice_vencedor_par = indice_finalista;
@@ -158,11 +159,10 @@ int escolher_vencedor_fibonacci(const Banco *banco, const int indices_finalistas
         }
     }
     if (indice_vencedor_par != -1) {
-        premiado_finalista[indice_vencedor_par] = 1;
         return indices_finalistas[indice_vencedor_par];
     }
 
-    /* 3o criterio: maior resultado acima da media entre os finalistas nao premiados */
+    /* 3o criterio: maior resultado acima da media entre os finalistas */
     long long soma_resultados = 0;
     for (int indice_finalista = 0; indice_finalista < QTD_FINALISTAS_SORTEIO; indice_finalista++) {
         soma_resultados += resultados_fibonacci[indice_finalista];
@@ -172,7 +172,7 @@ int escolher_vencedor_fibonacci(const Banco *banco, const int indices_finalistas
     int indice_vencedor_media = -1;
     long long maior_acima_media = 0;
     for (int indice_finalista = 0; indice_finalista < QTD_FINALISTAS_SORTEIO; indice_finalista++) {
-        if (!premiado_finalista[indice_finalista] && (double)resultados_fibonacci[indice_finalista] > media_resultados) {
+        if ((double)resultados_fibonacci[indice_finalista] > media_resultados) {
             if (indice_vencedor_media == -1 || resultados_fibonacci[indice_finalista] > maior_acima_media) {
                 maior_acima_media = resultados_fibonacci[indice_finalista];
                 indice_vencedor_media = indice_finalista;
@@ -180,7 +180,6 @@ int escolher_vencedor_fibonacci(const Banco *banco, const int indices_finalistas
         }
     }
     if (indice_vencedor_media != -1) {
-        premiado_finalista[indice_vencedor_media] = 1;
         return indices_finalistas[indice_vencedor_media];
     }
 
@@ -206,6 +205,9 @@ void abrir_banco(Banco *banco) {
 
     banco->quantidade_clientes = total_clientes;
     banco->proximo_numero = 1000;
+    banco->sorteio_realizado = 0;
+    banco->indice_contemplado = -1;
+    banco->premio_sorteio = 0.0;
 
     for (int indice_cliente = 0; indice_cliente < total_clientes; indice_cliente++) {
         Carteira *cliente_atual = &banco->clientes[indice_cliente];
@@ -436,27 +438,27 @@ void consultar_historico(const Banco *banco) {
     printf("\n== Saldo Total do banco ==\n");
     printf("%d | R$ %.2f\n", banco->quantidade_clientes, saldo_total_banco);
 
-    printf("Clientes Aptos a Empréstimos =\n");
+    printf("== Clientes Aptos a Empréstimos ==\n");
     for (int indice_cliente = 0; indice_cliente < banco->quantidade_clientes; indice_cliente++) {
         const Carteira *cliente_atual = &banco->clientes[indice_cliente];
         double limite_emprestimo = calcular_limite_emprestimo(cliente_atual);
         if (limite_emprestimo > 0.0) {
-            printf("%s %04d-%02d|%.2f\n",
+            printf("%s|%04d-%02d|%.2f\n",
                    cliente_atual->nome,
                    cliente_atual->numero_base,
-                   cliente_atual->tipo_conta,
+                   TIPO_CORRENTE,
                    limite_emprestimo);
         }
     }
 
-    printf("= Clientes com Saldo Negativo na Conta Salário ==\n");
+    printf("== Clientes com Saldo Negativo na Conta Salário ==\n");
     for (int indice_cliente = 0; indice_cliente < banco->quantidade_clientes; indice_cliente++) {
         const Carteira *cliente_atual = &banco->clientes[indice_cliente];
         if (cliente_atual->possui_salario && cliente_atual->saldo_salario < 0.0) {
-            printf("%s %04d-%02d/%.2f\n",
+            printf("%s|%04d-%02d|%.2f\n",
                    cliente_atual->nome,
                    cliente_atual->numero_base,
-                   cliente_atual->tipo_conta,
+                   TIPO_SALARIO,
                    cliente_atual->saldo_salario);
         }
     }
@@ -465,12 +467,22 @@ void consultar_historico(const Banco *banco) {
     for (int indice_cliente = 0; indice_cliente < banco->quantidade_clientes; indice_cliente++) {
         const Carteira *cliente_atual = &banco->clientes[indice_cliente];
         if (apto_titulo_capitalizacao(cliente_atual)) {
-            printf("%s|%04d-%02d/%.2f\n",
+            printf("%s|%04d-%02d|%.2f\n",
                    cliente_atual->nome,
                    cliente_atual->numero_base,
-                   cliente_atual->tipo_conta,
+                   TIPO_SALARIO,
                    cliente_atual->saldo_salario);
         }
+    }
+
+    printf("== Clientes Contemplado no Sorteio ==\n");
+    if (banco->sorteio_realizado) {
+        const Carteira *vencedor = &banco->clientes[banco->indice_contemplado];
+        printf("%s|%04d-%02d|%.2f\n",
+               vencedor->nome,
+               vencedor->numero_base,
+               vencedor->tipo_conta,
+               banco->premio_sorteio);
     }
 }
 
@@ -521,20 +533,24 @@ void efetuar_sorteio(Banco *banco) {
 
     double valor_premio = 10.0 * vencedor->saldo;
     vencedor->saldo += valor_premio;
-    if (vencedor->possui_corrente) {
+    if (vencedor->tipo_conta == TIPO_CORRENTE) {
         vencedor->saldo_corrente += valor_premio;
-    } else if (vencedor->possui_poupanca) {
-        vencedor->saldo_poupanca += valor_premio;
-    } else if (vencedor->possui_salario) {
+    } else if (vencedor->tipo_conta == TIPO_SALARIO) {
         vencedor->saldo_salario += valor_premio;
+    } else {
+        vencedor->saldo_poupanca += valor_premio;
     }
+
+    banco->sorteio_realizado = 1;
+    banco->indice_contemplado = indice_vencedor_banco;
+    banco->premio_sorteio = valor_premio;
 
     char mensagem_premio[MAX_HISTORICO];
     snprintf(mensagem_premio, MAX_HISTORICO, "Premio de sorteio Fibonacci: R$ %.2f.", valor_premio);
     registrar_evento_historico(vencedor, mensagem_premio);
 
-    printf("\n= Clientes Contemplado no Sorteio =\n");
-    printf("%s %04d-%02d|%.2f\n",
+    printf("\n== Clientes Contemplado no Sorteio ==\n");
+    printf("%s|%04d-%02d|%.2f\n",
            vencedor->nome,
            vencedor->numero_base,
            vencedor->tipo_conta,
