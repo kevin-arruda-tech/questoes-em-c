@@ -30,6 +30,9 @@ typedef struct {
     int quantidade_clientes;
     int banco_aberto;              /* 0: fechado, 1: aberto */
     int proximo_numero;            /* Começa no número 1000 */
+    int sorteio_realizado;         /* 1 se ja houve sorteio */
+    int indice_contemplado;        /* cliente contemplado no sorteio */
+    double premio_sorteio;         /* valor do premio */
 } Banco;
 
 /* Seção das Funções principais do menu */
