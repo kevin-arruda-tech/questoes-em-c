@@ -24,7 +24,6 @@ j) Ao final, apresente somente os nomes dos apostadores vencedores e suas respec
 classificação.*/
 
 #include <stdio.h>
-#include <string.h>
 
 #define QTD_APOSTADORES 5
 #define TAM_NOME 100
