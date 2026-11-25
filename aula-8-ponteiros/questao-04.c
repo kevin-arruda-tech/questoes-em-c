@@ -25,122 +25,136 @@ classificação.*/
 
 #include <stdio.h>
 
-#define QTD_APOSTADORES 5
-#define TAM_NOME 100
+#define QUANTIDADE_APOSTADORES 5
+#define TAMANHO_NOME 100
 
-long long soma_fibonacci(int n) {
-    if (n <= 0) {
+long long calcular_soma_fibonacci(int quantidade_termos) {
+    if (quantidade_termos <= 0) {
         return 0;
     }
-    long long a = 0, b = 1, prox;
-    long long soma = 0;
-    for (int i = 1; i <= n; i++) {
-        soma += a;
-        prox = a + b;
-        a = b;
-        b = prox;
+
+    long long termo_atual = 0;
+    long long proximo_termo = 1;
+    long long guarda_soma = 0;
+    long long soma_fibonacci = 0;
+
+    for (int indice = 1; indice <= quantidade_termos; indice++) {
+        soma_fibonacci += termo_atual;
+        guarda_soma = termo_atual + proximo_termo;
+        termo_atual = proximo_termo;
+        proximo_termo = guarda_soma;
     }
-    return soma;
+
+    return soma_fibonacci;
 }
 
-int eh_primo(long long num) {
-    if (num <= 1) {
+int verificar_numero_primo(long long numero) {
+    if (numero <= 1) {
         return 0;
     }
-    if (num == 2) {
+    if (numero == 2) {
         return 1;
     }
-    if (num % 2 == 0) {
+    if (numero % 2 == 0) {
         return 0;
     }
-    for (long long i = 3; i * i <= num; i += 2) {
-        if (num % i == 0) {
+
+    for (long long divisor = 3; divisor * divisor <= numero; divisor += 2) {
+        if (numero % divisor == 0) {
             return 0;
         }
     }
+
     return 1;
 }
 
 int main(void) {
-    char nomes[QTD_APOSTADORES][TAM_NOME];
-    int valores[QTD_APOSTADORES];
-    long long resultados[QTD_APOSTADORES];
-    int premiado[QTD_APOSTADORES] = {0};
+    char nomes_apostadores[QUANTIDADE_APOSTADORES][TAMANHO_NOME];
+    int valores_informados[QUANTIDADE_APOSTADORES];
+    long long resultados_fibonacci[QUANTIDADE_APOSTADORES];
+    int apostador_premiado[QUANTIDADE_APOSTADORES] = {0};
 
-    for (int i = 0; i < QTD_APOSTADORES; i++) {
-        printf("Digite o nome do apostador %d: ", i + 1);
-        scanf(" %99[^\n]", nomes[i]);
+    for (int indice = 0; indice < QUANTIDADE_APOSTADORES; indice++) {
+        printf("Digite o nome do apostador %d: ", indice + 1);
+        scanf(" %99[^\n]", nomes_apostadores[indice]);
 
         do {
-            printf("Digite um valor inteiro positivo para %s: ", nomes[i]);
-            scanf("%d", &valores[i]);
-        } while (valores[i] <= 0);
+            printf("Digite um valor inteiro positivo para %s: ", nomes_apostadores[indice]);
+            scanf("%d", &valores_informados[indice]);
+        } while (valores_informados[indice] <= 0);
 
-        resultados[i] = soma_fibonacci(valores[i]);
+        resultados_fibonacci[indice] = calcular_soma_fibonacci(valores_informados[indice]);
     }
 
-    int idx_primeiro = -1;
-    long long maior_primo = 0;
-    for (int i = 0; i < QTD_APOSTADORES; i++) {
-        if (!premiado[i] && eh_primo(resultados[i])) {
-            if (idx_primeiro == -1 || resultados[i] > maior_primo) {
-                maior_primo = resultados[i];
-                idx_primeiro = i;
+    int indice_primeiro_lugar = -1;
+    long long maior_resultado_primo = 0;
+
+    for (int indice = 0; indice < QUANTIDADE_APOSTADORES; indice++) {
+        if (!apostador_premiado[indice] && verificar_numero_primo(resultados_fibonacci[indice])) {
+            if (indice_primeiro_lugar == -1 || resultados_fibonacci[indice] > maior_resultado_primo) {
+                maior_resultado_primo = resultados_fibonacci[indice];
+                indice_primeiro_lugar = indice;
             }
         }
     }
-    if (idx_primeiro != -1) {
-        premiado[idx_primeiro] = 1;
+
+    if (indice_primeiro_lugar != -1) {
+        apostador_premiado[indice_primeiro_lugar] = 1;
     }
 
-    int idx_segundo = -1;
-    long long maior_par = 0;
-    for (int i = 0; i < QTD_APOSTADORES; i++) {
-        if (!premiado[i] && resultados[i] % 2 == 0) {
-            if (idx_segundo == -1 || resultados[i] > maior_par) {
-                maior_par = resultados[i];
-                idx_segundo = i;
+    int indice_segundo_lugar = -1;
+    long long maior_resultado_par = 0;
+
+    for (int indice = 0; indice < QUANTIDADE_APOSTADORES; indice++) {
+        if (!apostador_premiado[indice] && resultados_fibonacci[indice] % 2 == 0) {
+            if (indice_segundo_lugar == -1 || resultados_fibonacci[indice] > maior_resultado_par) {
+                maior_resultado_par = resultados_fibonacci[indice];
+                indice_segundo_lugar = indice;
             }
         }
     }
-    if (idx_segundo != -1) {
-        premiado[idx_segundo] = 1;
+
+    if (indice_segundo_lugar != -1) {
+        apostador_premiado[indice_segundo_lugar] = 1;
     }
 
-    long long soma_total = 0;
-    for (int i = 0; i < QTD_APOSTADORES; i++) {
-        soma_total += resultados[i];
+    long long soma_total_resultados = 0;
+    for (int indice = 0; indice < QUANTIDADE_APOSTADORES; indice++) {
+        soma_total_resultados += resultados_fibonacci[indice];
     }
-    double media = (double)soma_total / QTD_APOSTADORES;
 
-    int idx_terceiro = -1;
-    long long maior_acima_media = 0;
-    for (int i = 0; i < QTD_APOSTADORES; i++) {
-        if (!premiado[i] && (double)resultados[i] > media) {
-            if (idx_terceiro == -1 || resultados[i] > maior_acima_media) {
-                maior_acima_media = resultados[i];
-                idx_terceiro = i;
+    double media_resultados = (double)soma_total_resultados / QUANTIDADE_APOSTADORES;
+
+    int indice_terceiro_lugar = -1;
+    long long maior_resultado_acima_media = 0;
+
+    for (int indice = 0; indice < QUANTIDADE_APOSTADORES; indice++) {
+        if (!apostador_premiado[indice] && (double)resultados_fibonacci[indice] > media_resultados) {
+            if (indice_terceiro_lugar == -1 || resultados_fibonacci[indice] > maior_resultado_acima_media) {
+                maior_resultado_acima_media = resultados_fibonacci[indice];
+                indice_terceiro_lugar = indice;
             }
         }
     }
-    if (idx_terceiro != -1) {
-        premiado[idx_terceiro] = 1;
+
+    if (indice_terceiro_lugar != -1) {
+        apostador_premiado[indice_terceiro_lugar] = 1;
     }
 
-    if (idx_terceiro != -1) {
-        printf("3o lugar: %s\n", nomes[idx_terceiro]);
+    if (indice_terceiro_lugar != -1) {
+        printf("3o lugar: %s\n", nomes_apostadores[indice_terceiro_lugar]);
     } else {
         printf("3o lugar: Sem vencedor\n");
     }
 
-    if (idx_segundo != -1) {
-        printf("2o lugar: %s\n", nomes[idx_segundo]);
+    if (indice_segundo_lugar != -1) {
+        printf("2o lugar: %s\n", nomes_apostadores[indice_segundo_lugar]);
     } else {
         printf("2o lugar: Sem vencedor\n");
     }
 
-    if (idx_primeiro != -1) {
-        printf("1o lugar: %s\n", nomes[idx_primeiro]);
+    if (indice_primeiro_lugar != -1) {
+        printf("1o lugar: %s\n", nomes_apostadores[indice_primeiro_lugar]);
     } else {
         printf("1o lugar: Sem vencedor\n");
     }
